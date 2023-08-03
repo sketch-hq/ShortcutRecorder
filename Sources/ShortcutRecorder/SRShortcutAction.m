@@ -4,7 +4,7 @@
 //
 
 #import <Carbon/Carbon.h>
-#import <os/trace.h>
+#import <os/log.h>
 #import <os/activity.h>
 
 #import "ShortcutRecorder/SRCommon.h"
@@ -229,7 +229,7 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
     os_activity_initiate("-[SRShortcutAction performActionOnTarget:]", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (!self.isEnabled)
         {
-            os_trace_debug("Not performed: disabled");
+            os_log_debug(OS_LOG_DEFAULT, "Not performed: disabled");
             return;
         }
 
@@ -237,7 +237,7 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
 
         if (actionHandler)
         {
-            os_trace_debug("Using action handler");
+            os_log_debug(OS_LOG_DEFAULT, "Using action handler");
             isPerformed = actionHandler(self);
         }
         else
@@ -245,7 +245,7 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
             id target = aTarget != nil ? aTarget : self.target;
             if (!target)
             {
-                os_trace_debug("Not performed: no associated target");
+                os_log_debug(OS_LOG_DEFAULT, "Not performed: no associated target");
                 return;
             }
 
@@ -255,18 +255,18 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
             BOOL canPerformProtocol = NO;
             if (!(canPerformAction = action && [target respondsToSelector:action]) && !(canPerformProtocol = [target respondsToSelector:@selector(performShortcutAction:)]))
             {
-                os_trace_debug("Not performed: target cannot respond to action");
+                os_log_debug(OS_LOG_DEFAULT, "Not performed: target cannot respond to action");
                 return;
             }
             else if ([target respondsToSelector:@selector(validateUserInterfaceItem:)] && ![target validateUserInterfaceItem:self])
             {
-                os_trace_debug("Not performed: target ignored action");
+                os_log_debug(OS_LOG_DEFAULT, "Not performed: target ignored action");
                 return;
             }
 
             if (canPerformAction)
             {
-                os_trace_debug("Using action");
+                os_log_debug(OS_LOG_DEFAULT, "Using action");
                 NSMethodSignature *sig = [target methodSignatureForSelector:action];
                 IMP actionMethod = [target methodForSelector:action];
                 BOOL returnsBool = strncmp(sig.methodReturnType, @encode(BOOL), 2) == 0;
@@ -300,7 +300,7 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
             }
             else if (canPerformProtocol)
             {
-                os_trace_debug("Using protocol");
+                os_log_debug(OS_LOG_DEFAULT, "Using protocol");
                 isPerformed = [(id<SRShortcutActionTarget>)target performShortcutAction:self];
             }
         }
@@ -345,7 +345,7 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
         if ([newShortcut isKindOfClass:NSDictionary.class])
             newShortcut = [SRShortcut shortcutWithDictionary:(NSDictionary *)newShortcut];
         else if ([newShortcut isKindOfClass:NSData.class])
-            newShortcut = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData *)newShortcut];
+            newShortcut = [NSKeyedUnarchiver unarchivedObjectOfClass:[SRShortcut class] fromData:(NSData *)newShortcut error:nil];
         else if ((NSNull *)newShortcut == NSNull.null)
             newShortcut = nil;
 
@@ -397,7 +397,7 @@ static void *_SRShortcutActionContext = &_SRShortcutActionContext;
             else if (keyCode == kVK_Control || keyCode == kVK_RightControl)
                 eventType = modifierFlags & NSEventModifierFlagControl ? SRKeyEventTypeDown : SRKeyEventTypeUp;
             else
-                os_trace("#Error Unexpected key code %hu for the FlagsChanged event", keyCode);
+                os_log_info(OS_LOG_DEFAULT, "#Error Unexpected key code %hu for the FlagsChanged event", keyCode);
             break;
         }
         default:
@@ -966,12 +966,12 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 {
     if (!anEvent)
     {
-        os_trace_error("#Error Event is NULL");
+        os_log_error(OS_LOG_DEFAULT, "#Error Event is NULL");
         return eventNotHandledErr;
     }
     else if (GetEventClass(anEvent) != kEventClassKeyboard)
     {
-        os_trace_error("#Error Not a keyboard event");
+        os_log_error(OS_LOG_DEFAULT, "#Error Not a keyboard event");
         return eventNotHandledErr;
     }
     else
@@ -1017,7 +1017,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 {
     @synchronized (_actions)
     {
-        os_trace_debug("Global Shortcut Monitor counter: %ld -> %ld", _disableCounter, _disableCounter - 1);
+        os_log_debug(OS_LOG_DEFAULT, "Global Shortcut Monitor counter: %ld -> %ld", _disableCounter, _disableCounter - 1);
         _disableCounter -= 1;
 
         if (_disableCounter == 0)
@@ -1034,7 +1034,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 {
     @synchronized (_actions)
     {
-        os_trace_debug("Global Shortcut Monitor counter: %ld -> %ld", _disableCounter, _disableCounter + 1);
+        os_log_debug(OS_LOG_DEFAULT, "Global Shortcut Monitor counter: %ld -> %ld", _disableCounter, _disableCounter + 1);
         _disableCounter += 1;
 
         if (_disableCounter == 1)
@@ -1054,19 +1054,19 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
     os_activity_initiate("-[SRGlobalShortcutMonitor handleEvent:]", OS_ACTIVITY_FLAG_DETACHED, ^{
         if (self->_disableCounter > 0)
         {
-            os_trace_debug("Monitoring is currently disabled");
+            os_log_debug(OS_LOG_DEFAULT, "Monitoring is currently disabled");
             return;
         }
 
         EventHotKeyID hotKeyID;
         if (GetEventParameter(anEvent, kEventParamDirectObject, typeEventHotKeyID, NULL, sizeof(hotKeyID), NULL, &hotKeyID) != noErr)
         {
-            os_trace_error("#Critical Failed to get hot key ID: %d", error);
+            os_log_error(OS_LOG_DEFAULT, "#Critical Failed to get hot key ID: %d", error);
             return;
         }
         else if (hotKeyID.id == 0 || hotKeyID.signature != SRShortcutActionSignature)
         {
-            os_trace_error("#Error Unexpected hot key with id %u and signature: %u", hotKeyID.id, hotKeyID.signature);
+            os_log_error(OS_LOG_DEFAULT, "#Error Unexpected hot key with id %u and signature: %u", hotKeyID.id, hotKeyID.signature);
             return;
         }
 
@@ -1076,7 +1076,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
             if (!shortcut)
             {
-                os_trace("Unregistered hot key with id %u and signature %u", hotKeyID.id, hotKeyID.signature);
+                os_log_info(OS_LOG_DEFAULT, "Unregistered hot key with id %u and signature %u", hotKeyID.id, hotKeyID.signature);
                 return;
             }
 
@@ -1090,7 +1090,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
                     eventType = SRKeyEventTypeUp;
                     break;
                 default:
-                    os_trace("#Error Unexpected key event of type %u", GetEventKind(anEvent));
+                    os_log_info(OS_LOG_DEFAULT, "#Error Unexpected key event of type %u", GetEventKind(anEvent));
                     return;
             }
 
@@ -1098,7 +1098,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
             if (!actions.count)
             {
-                os_trace("No actions for the shortcut");
+                os_log_info(OS_LOG_DEFAULT, "No actions for the shortcut");
                 return;
             }
 
@@ -1120,12 +1120,12 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
 - (void)didAddEventHandler
 {
-    os_trace_debug("Added Carbon HotKey Event Handler");
+    os_log_debug(OS_LOG_DEFAULT, "Added Carbon HotKey Event Handler");
 }
 
 - (void)didRemoveEventHandler
 {
-    os_trace_debug("Removed Carbon HotKey Event Handler");
+    os_log_debug(OS_LOG_DEFAULT, "Removed Carbon HotKey Event Handler");
 }
 
 #pragma mark Private
@@ -1142,7 +1142,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
         { kEventClassKeyboard, kEventHotKeyPressed },
         { kEventClassKeyboard, kEventHotKeyReleased }
     };
-    os_trace("Installing Carbon hot key event handler");
+    os_log_info(OS_LOG_DEFAULT, "Installing Carbon hot key event handler");
     OSStatus error = InstallEventHandler(GetEventDispatcherTarget(),
                                          _SRCarbonEventHandler,
                                          sizeof(EventSpec) / sizeof(EventTypeSpec),
@@ -1152,7 +1152,7 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
     if (error != noErr)
     {
-        os_trace_error("#Critical Failed to install event handler: %d", error);
+        os_log_error(OS_LOG_DEFAULT, "#Critical Failed to install event handler: %d", error);
         _carbonEventHandler = NULL;
     }
     else
@@ -1167,11 +1167,11 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
     if (_disableCounter <= 0 && _shortcutToHotKeyRef.count)
         return;
 
-    os_trace("Removing Carbon hot key event handler");
+    os_log_info(OS_LOG_DEFAULT, "Removing Carbon hot key event handler");
     OSStatus error = RemoveEventHandler(_carbonEventHandler);
 
     if (error != noErr)
-        os_trace_error("#Error Failed to remove event handler: %d", error);
+        os_log_error(OS_LOG_DEFAULT, "#Error Failed to remove event handler: %d", error);
 
     // Assume that an error happened due to _carbonEventHandler being invalid.
     _carbonEventHandler = NULL;
@@ -1187,13 +1187,13 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
     if (aShortcut.keyCode == SRKeyCodeNone)
     {
-        os_trace_error("#Error Shortcut without a key code cannot be registered as Carbon hot key");
+        os_log_error(OS_LOG_DEFAULT, "#Error Shortcut without a key code cannot be registered as Carbon hot key");
         return;
     }
 
     static UInt32 CarbonID = _SRInvalidHotKeyID;
     EventHotKeyID hotKeyID = {SRShortcutActionSignature, ++CarbonID};
-    os_trace("Registering Carbon hot key");
+    os_log_info(OS_LOG_DEFAULT, "Registering Carbon hot key");
     OSStatus error = RegisterEventHotKey(aShortcut.carbonKeyCode,
                                          aShortcut.carbonModifierFlags,
                                          hotKeyID,
@@ -1203,16 +1203,16 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
     if (error != noErr || !hotKey)
     {
-        os_trace_error_with_payload("#Critical Failed to register Carbon hot key: %d", error, ^(xpc_object_t d) {
-            xpc_dictionary_set_uint64(d, "keyCode", aShortcut.keyCode);
-            xpc_dictionary_set_uint64(d, "modifierFlags", aShortcut.modifierFlags);
+        os_log_error(OS_LOG_DEFAULT, "#Critical Failed to register Carbon hot key: %d %@", error, @{
+            @"keyCode": @(aShortcut.keyCode),
+            @"modifierFlags": @(aShortcut.modifierFlags)
         });
         return;
     }
 
-    os_trace_with_payload("Registered Carbon hot key %u", hotKeyID.id, ^(xpc_object_t d) {
-        xpc_dictionary_set_uint64(d, "keyCode", aShortcut.keyCode);
-        xpc_dictionary_set_uint64(d, "modifierFlags", aShortcut.modifierFlags);
+    os_log_info(OS_LOG_DEFAULT, "Registered Carbon hot key %u %@", hotKeyID.id, @{
+        @"keyCode": @(aShortcut.keyCode),
+        @"modifierFlags": @(aShortcut.modifierFlags)
     });
 
     [_shortcutToHotKeyRef setObject:(__bridge id _Nullable)(hotKey) forKey:aShortcut];
@@ -1229,21 +1229,21 @@ static OSStatus _SRCarbonEventHandler(EventHandlerCallRef aHandler, EventRef anE
 
     UInt32 hotKeyID = [_shortcutToHotKeyId objectForKey:aShortcut].unsignedIntValue;
 
-    os_trace("Removing Carbon hot key %u", hotKeyID);
+    os_log_info(OS_LOG_DEFAULT, "Removing Carbon hot key %u", hotKeyID);
     OSStatus error = UnregisterEventHotKey(hotKey);
 
     if (error != noErr)
     {
-        os_trace_error_with_payload("#Critical Failed to unregister Carbon hot key %u: %d", hotKeyID, error, ^(xpc_object_t d) {
-            xpc_dictionary_set_uint64(d, "keyCode", aShortcut.keyCode);
-            xpc_dictionary_set_uint64(d, "modifierFlags", aShortcut.modifierFlags);
+        os_log_error(OS_LOG_DEFAULT, "#Critical Failed to unregister Carbon hot key %u: %d %@", hotKeyID, error, @{
+            @"keyCode": @(aShortcut.keyCode),
+            @"modifierFlags": @(aShortcut.modifierFlags)
         });
     }
     else
     {
-        os_trace_with_payload("Unregistered Carbon hot key %u", hotKeyID, ^(xpc_object_t d) {
-            xpc_dictionary_set_uint64(d, "keyCode", aShortcut.keyCode);
-            xpc_dictionary_set_uint64(d, "modifierFlags", aShortcut.modifierFlags);
+        os_log_info(OS_LOG_DEFAULT, "Unregistered Carbon hot key %u %@", hotKeyID, @{
+            @"keyCode": @(aShortcut.keyCode),
+            @"modifierFlags": @(aShortcut.modifierFlags)
         });
     }
 
@@ -1281,13 +1281,13 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
 
     if (aType == kCGEventTapDisabledByTimeout || aType == kCGEventTapDisabledByUserInput)
     {
-        os_trace_error("#Error #Developer The system disabled event tap due to %u", aType);
+        os_log_error(OS_LOG_DEFAULT, "#Error #Developer The system disabled event tap due to %u", aType);
         CGEventTapEnable(self.eventTap, true);
         return anEvent;
     }
     else if (aType != kCGEventKeyDown && aType != kCGEventKeyUp && aType != kCGEventFlagsChanged)
     {
-        os_trace_error("#Error #Developer Unexpected event of type %u", aType);
+        os_log_error(OS_LOG_DEFAULT, "#Error #Developer Unexpected event of type %u", aType);
         return anEvent;
     }
     else
@@ -1317,7 +1317,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
                                             (__bridge void *)self);
     if (!eventTap)
     {
-        os_trace_error("#Critical Unable to create event tap: make sure Accessibility is enabled");
+        os_log_error(OS_LOG_DEFAULT, "#Critical Unable to create event tap: make sure Accessibility is enabled");
         return nil;
     }
 
@@ -1389,7 +1389,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
     });
 
     if (!result && !_canActivelyFilterEvents)
-        os_trace_error("#Developer #Error The monitor is not configured to actively filter events");
+        os_log_error(OS_LOG_DEFAULT, "#Developer #Error The monitor is not configured to actively filter events");
 
     return result;
 }
@@ -1590,7 +1590,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
     SRShortcut *shortcut = [SRShortcut shortcutWithEvent:anEvent ignoringCharacters:YES];
     if (!shortcut)
     {
-        os_trace_error("#Error Not a keyboard event");
+        os_log_error(OS_LOG_DEFAULT, "#Error Not a keyboard event");
         return NO;
     }
 
@@ -1661,8 +1661,8 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
         systemKeyBindings = [NSDictionary dictionaryWithContentsOfURL:systemKeyBindingsURL error:&error];
         if (!systemKeyBindings)
         {
-            os_trace_error_with_payload("#Error unable to read system key bindings", ^(xpc_object_t d) {
-                xpc_dictionary_set_string(d, "error", error.localizedDescription.UTF8String);
+            os_log_error(OS_LOG_DEFAULT, "#Error unable to read system key bindings %@", @{
+                @"error": error.localizedDescription
             });
             systemKeyBindings = @{};
         }
@@ -1672,7 +1672,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
         systemKeyBindings = [NSDictionary dictionaryWithContentsOfURL:systemKeyBindingsURL];
         if (!systemKeyBindings)
         {
-            os_trace_error("#Error unable to read system key bindings");
+            os_log_error(OS_LOG_DEFAULT, "#Error unable to read system key bindings");
             systemKeyBindings = @{};
         }
     }
@@ -1691,8 +1691,8 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
         userKeyBindings = [NSDictionary dictionaryWithContentsOfURL:userKeyBindingsURL error:&error];
         if (!userKeyBindings)
         {
-            os_trace_debug_with_payload("#Error unable to read user key bindings", ^(xpc_object_t d) {
-                xpc_dictionary_set_string(d, "error", error.localizedDescription.UTF8String);
+            os_log_debug(OS_LOG_DEFAULT, "#Error unable to read user key bindings %@", @{
+                @"error": error.localizedDescription
             });
             userKeyBindings = @{};
         }
@@ -1702,7 +1702,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
         userKeyBindings = [NSDictionary dictionaryWithContentsOfURL:userKeyBindingsURL];
         if (!userKeyBindings)
         {
-            os_trace_debug("#Error unable to read user key bindings");
+            os_log_debug(OS_LOG_DEFAULT, "#Error unable to read user key bindings");
             userKeyBindings = @{};
         }
     }

@@ -3,7 +3,7 @@
 //  CC BY 4.0
 //
 
-#import <os/trace.h>
+#import <os/log.h>
 
 #import "ShortcutRecorder/SRKeyCodeTransformer.h"
 
@@ -56,7 +56,7 @@
 
     if (keyCodeString.length != 1)
     {
-        os_trace_error("#Error unexpected key symbol");
+        os_log_error(OS_LOG_DEFAULT, "#Error unexpected key symbol");
         return nil;
     }
 
@@ -79,7 +79,7 @@
 
     if (!keyCode)
     {
-        os_trace_error("#Error unexpected key symbol");
+        os_log_error(OS_LOG_DEFAULT, "#Error unexpected key symbol");
         return nil;
     }
 
@@ -148,14 +148,14 @@
 {
     if (![aValue isKindOfClass:NSDictionary.class] && ![aValue isKindOfClass:SRShortcut.class])
     {
-        os_trace_error("#Error invalid class of the value");
+        os_log_error(OS_LOG_DEFAULT, "#Error invalid class of the value");
         return nil;
     }
 
     NSNumber *keyCode = aValue[SRShortcutKeyKeyCode];
     if (![keyCode isKindOfClass:NSNumber.class])
     {
-        os_trace_error("#Error invalid key code");
+        os_log_error(OS_LOG_DEFAULT, "#Error invalid key code");
         return nil;
     }
 
@@ -163,7 +163,7 @@
 
     if (!keyCodeSymbol)
     {
-        os_trace_error("#Error unexpected key code");
+        os_log_error(OS_LOG_DEFAULT, "#Error unexpected key code");
         return nil;
     }
 

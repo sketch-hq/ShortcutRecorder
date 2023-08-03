@@ -3,7 +3,7 @@
 //  CC BY 4.0
 //
 
-#import <os/trace.h>
+#import <os/log.h>
 #import <os/activity.h>
 
 #import "ShortcutRecorder/SRCommon.h"
@@ -142,7 +142,7 @@
 
         if (err != noErr)
         {
-            os_trace_error("#Error Unable to read System Shortcuts: %d", err);
+            os_log_error(OS_LOG_DEFAULT, "#Error Unable to read System Shortcuts: %d", err);
             result = NO;
             return;
         }
