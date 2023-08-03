@@ -3,7 +3,7 @@
 //  CC BY 4.0
 //
 
-#import <os/trace.h>
+#import <os/log.h>
 #import <os/activity.h>
 
 #import "ShortcutRecorder/SRCommon.h"
@@ -173,7 +173,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 
     if (!inputSource)
     {
-        os_trace_error("#Critical Failed to create an input source");
+        os_log_error(OS_LOG_DEFAULT, "#Critical Failed to create an input source");
         return nil;
     }
 
@@ -191,7 +191,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
                                                                         keyCode:aKeyCode];
         }
         else
-            os_trace_error("#Error Input source misses an ID");
+            os_log_error(OS_LOG_DEFAULT, "#Error Input source misses an ID");
     }
 
     @synchronized (self)
@@ -204,11 +204,11 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 
             if (translation)
             {
-                os_trace_debug("Translation cache hit");
+                os_log_debug(OS_LOG_DEFAULT, "Translation cache hit");
                 return translation;
             }
             else
-                os_trace_debug("Translation cache miss");
+                os_log_debug(OS_LOG_DEFAULT, "Translation cache miss");
         }
 
         CFDataRef layoutData = TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData);
@@ -228,7 +228,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
                                         chars);
         if (error != noErr)
         {
-            os_trace_error("#Error Unable to translate keyCode %hu and modifierFlags %lu: %d",
+            os_log_error(OS_LOG_DEFAULT, "#Error Unable to translate keyCode %hu and modifierFlags %lu: %d",
                            aKeyCode,
                            anImplicitModifierFlags,
                            error);
@@ -236,7 +236,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
         }
         else if (actualLength == 0)
         {
-            os_trace_debug("#Error No translation exists for keyCode %hu and modifierFlags %lu",
+            os_log_debug(OS_LOG_DEFAULT, "#Error No translation exists for keyCode %hu and modifierFlags %lu",
                            aKeyCode,
                            anImplicitModifierFlags);
             return nil;
@@ -287,7 +287,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 
     if (!inputSource)
     {
-        os_trace_error("#Critical Failed to create an input source");
+        os_log_error(OS_LOG_DEFAULT, "#Critical Failed to create an input source");
         return nil;
     }
 
@@ -297,7 +297,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 
     if (!sourceIdentifier)
     {
-        os_trace_error("#Error Input source misses an ID");
+        os_log_error(OS_LOG_DEFAULT, "#Error Input source misses an ID");
         return nil;
     }
 
@@ -306,7 +306,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
         if ([_inputSourceIdentifier isEqualToString:sourceIdentifier])
             return _translationToKeyCode[aTranslation];
 
-        os_trace_debug("Updating translation -> key code mapping");
+        os_log_debug(OS_LOG_DEFAULT, "Updating translation -> key code mapping");
 
         __auto_type knownKeyCodes = SRKeyCodeTransformer.knownKeyCodes;
         NSMutableDictionary *newTranslationToKeyCode = [NSMutableDictionary dictionaryWithCapacity:knownKeyCodes.count];
@@ -348,7 +348,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 {
     if (self.class == SRKeyCodeTransformer.class)
     {
-        os_trace_error("#Developer #Error Use SRSymbolicKeyCodeTransformer instead");
+        os_log_error(OS_LOG_DEFAULT, "#Developer #Error Use SRSymbolicKeyCodeTransformer instead");
         return SRSymbolicKeyCodeTransformer.sharedTransformer;
     }
     else
@@ -359,7 +359,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 {
     if (self.class == SRKeyCodeTransformer.class)
     {
-        os_trace_error("#Developer #Error Use SRSymbolicKeyCodeTransformer instead");
+        os_log_error(OS_LOG_DEFAULT, "#Developer #Error Use SRSymbolicKeyCodeTransformer instead");
         return [[SRSymbolicKeyCodeTransformer alloc] initWithInputSource:anInputSource];
     }
     else
@@ -774,7 +774,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     os_activity_initiate("Key Code -> Literal", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (![aValue isKindOfClass:NSNumber.class])
         {
-            os_trace_error("#Error Invalid key code");
+            os_log_error(OS_LOG_DEFAULT, "#Error Invalid key code");
             return;
         }
 
@@ -824,7 +824,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     os_activity_initiate("Key Code -> Symbol", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (![aValue isKindOfClass:NSNumber.class])
         {
-            os_trace_error("#Error Invalid key code");
+            os_log_error(OS_LOG_DEFAULT, "#Error Invalid key code");
             return;
         }
 
@@ -874,7 +874,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     os_activity_initiate("Key Code -> ASCII Literal", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (![aValue isKindOfClass:NSNumber.class])
         {
-            os_trace_error("#Error Invalid key code");
+            os_log_error(OS_LOG_DEFAULT, "#Error Invalid key code");
             return;
         }
 
@@ -900,7 +900,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     os_activity_initiate("ASCII Literal -> Key Code", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (![aValue isKindOfClass:NSString.class] || !aValue.length)
         {
-            os_trace_error("#Error Invalid ASCII literal");
+            os_log_error(OS_LOG_DEFAULT, "#Error Invalid ASCII literal");
             return;
         }
 
@@ -1111,7 +1111,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
 
     if (!result)
     {
-        os_trace_error("#Error Invalid value for reverse transformation");
+        os_log_error(OS_LOG_DEFAULT, "#Error Invalid value for reverse transformation");
     }
 
     return result;
@@ -1154,7 +1154,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     os_activity_initiate("Key Code -> ASCII Symbol", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (![aValue isKindOfClass:NSNumber.class])
         {
-            os_trace_error("#Error Invalid key code");
+            os_log_error(OS_LOG_DEFAULT, "#Error Invalid key code");
             return;
         }
 
@@ -1180,7 +1180,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     os_activity_initiate("ASCII Symbol -> Key Code", OS_ACTIVITY_FLAG_DEFAULT, ^{
         if (![aValue isKindOfClass:NSString.class] || aValue.length > 1)
         {
-            os_trace_error("#Error Invalid ASCII symbol");
+            os_log_error(OS_LOG_DEFAULT, "#Error Invalid ASCII symbol");
             return;
         }
 
@@ -1336,7 +1336,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
     });
 
     if (!result)
-        os_trace_error("#Error Invalid value for reverse transformation");
+        os_log_error(OS_LOG_DEFAULT, "#Error Invalid value for reverse transformation");
 
     return result;
 }
