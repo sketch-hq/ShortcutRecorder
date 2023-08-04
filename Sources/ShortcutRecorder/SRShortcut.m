@@ -425,11 +425,13 @@ SRShortcutKey const SRShortcutKeyCharactersIgnoringModifiers = @"charactersIgnor
 
 #pragma mark NSObject
 
+#ifndef __clang_analyzer__
 + (instancetype)new
 {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
+#endif
 
 - (instancetype)init
 {

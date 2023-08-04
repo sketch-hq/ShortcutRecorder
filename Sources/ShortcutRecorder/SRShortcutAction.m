@@ -1345,6 +1345,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
 
 #pragma mark Methods
 
+#ifndef __clang_analyzer__
 - (CGEventRef)handleEvent:(CGEventRef)anEvent
 {
     __block __auto_type result = anEvent;
@@ -1393,6 +1394,7 @@ CGEventRef _Nullable _SRQuartzEventHandler(CGEventTapProxy aProxy, CGEventType a
 
     return result;
 }
+#endif
 
 #pragma mark SRShortcutMonitor
 

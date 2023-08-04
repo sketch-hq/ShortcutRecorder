@@ -1016,7 +1016,7 @@ typedef TISInputSourceRef (*_SRKeyCodeTransformerCacheInputSourceCreate)(void);
                     break;
             }
         }
-        else if ((lowercaseValue.length == 2 || lowercaseValue.length == 3) & [lowercaseValue hasPrefix:@"f"])
+        else if ((lowercaseValue.length == 2 || lowercaseValue.length == 3) && [lowercaseValue hasPrefix:@"f"])
         {
             NSInteger fNumber = [lowercaseValue substringFromIndex:1].integerValue;
             if (fNumber > 0 && ((lowercaseValue.length == 2 && fNumber < 10) || (lowercaseValue.length == 3 && fNumber >= 10)))
