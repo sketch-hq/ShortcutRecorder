@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.9
 
 import PackageDescription
 
@@ -6,7 +6,7 @@ let package = Package(
     name: "ShortcutRecorder",
     defaultLocalization: "en",
     platforms: [
-        .macOS(.v12)
+        .macOS(.v13)
     ],
     products: [
         .library(name: "ShortcutRecorder", targets: ["ShortcutRecorder"])
