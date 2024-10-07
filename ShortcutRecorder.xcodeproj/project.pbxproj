@@ -648,7 +648,6 @@
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 3.1;
 				DYLIB_CURRENT_VERSION = 3.4;
-				ENABLE_MODULE_VERIFIER = YES;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Sources/ShortcutRecorder/Info.plist;
 				INSTALL_PATH = "@rpath";
@@ -658,8 +657,6 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -680,7 +677,6 @@
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 3.1;
 				DYLIB_CURRENT_VERSION = 3.4;
-				ENABLE_MODULE_VERIFIER = YES;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Sources/ShortcutRecorder/Info.plist;
 				INSTALL_PATH = "@rpath";
@@ -690,8 +686,6 @@
 					"@loader_path/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
 				SWIFT_VERSION = 5.0;
