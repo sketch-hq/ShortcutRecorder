@@ -328,9 +328,7 @@ NS_INLINE NSEventModifierFlags SRCoreGraphicsToCocoaFlags(CGEventFlags aCoreGrap
 /*!
  Return Bundle where resources can be found.
 
- @throws NSInternalInconsistencyException
-
- @discussion Throws NSInternalInconsistencyException if bundle cannot be found.
+ @throws NSInternalInconsistencyException If bundle cannot be found.
  */
 NS_SWIFT_NAME(shortcutRecorderBundle())
 NSBundle * SRBundle(void);

@@ -185,7 +185,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
              @"anAccessibility is outside of the allowed range.");
     NSAssert(anAccessibility == SRRecorderControlStyleComponentsAccessibilityNone ||
              (anAccessibility & SRRecorderControlStyleComponentsAccessibilityNone) == 0, @"None cannot be combined with other accessibility options.");
-    NSAssert(aDirection >= SRRecorderControlStyleComponentsLayoutDirectionUnspecified && aTint < SRRecorderControlStyleComponentsLayoutDirectionMax,
+    NSAssert(aDirection >= SRRecorderControlStyleComponentsLayoutDirectionUnspecified && aTint < SRRecorderControlStyleComponentsTintMax,
              @"aDirection is outside of the allowed range.");
 
     self = [super init];
