@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/Kentzo/ShortcutRecorder.git', :tag => s.version }
 
   s.platform = :osx
-  s.osx.deployment_target = "10.11"
+  s.osx.deployment_target = "10.13"
   s.frameworks = 'Carbon', 'Cocoa'
 
   s.source_files = 'Sources/ShortcutRecorder/**/*.{h,m}'

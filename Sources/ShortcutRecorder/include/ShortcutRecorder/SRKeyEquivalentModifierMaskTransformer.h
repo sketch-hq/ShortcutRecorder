@@ -19,7 +19,7 @@ NS_SWIFT_NAME(KeyEquivalentModifierMaskTransformer)
 /*!
  Shared transformer.
  */
-@property (class, readonly) SRKeyEquivalentModifierMaskTransformer *sharedTransformer NS_SWIFT_NAME(shared);;
+@property (class, readonly) SRKeyEquivalentModifierMaskTransformer *sharedTransformer NS_SWIFT_NAME(shared);
 
 - (nullable NSNumber *)transformedValue:(nullable SRShortcut *)aValue;
 

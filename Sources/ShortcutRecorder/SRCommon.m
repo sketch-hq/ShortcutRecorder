@@ -35,6 +35,24 @@ SRModifierFlagString const SRModifierFlagStringOption = @"⌥";
 SRModifierFlagString const SRModifierFlagStringShift = @"⇧";
 SRModifierFlagString const SRModifierFlagStringControl = @"⌃";
 
+NSString * const SRLogSubsystem = @"com.kulakov.ShortcutRecorder";
+SRLogCategory const SRLogCategoryKeyBindingTransformer = @"SRKeyBindingTransformer";
+SRLogCategory const SRLogCategoryKeyCodeTransformer = @"SRKeyCodeTransformer";
+SRLogCategory const SRLogCategoryModifierFlagsTransformer = @"SRModifierFlagsTransformer";
+SRLogCategory const SRLogCategoryRecorderControl = @"SRRecorderControl";
+SRLogCategory const SRLogCategoryRecorderControlStyle = @"SRRecorderControlStyle";
+SRLogCategory const SRLogCategoryRecorderControlStyleResourceLoader = @"SRRecorderControlStyleResourceLoader";
+SRLogCategory const SRLogCategoryShortcut = @"SRShortcut";
+SRLogCategory const SRLogCategoryShortcutAction = @"SRShortcutAction";
+SRLogCategory const SRLogCategoryShortcutMonitor = @"SRShortcutMonitor";
+SRLogCategory const SRLogCategoryShortcutValidator = @"SRShortcutValidator";
+
+#if defined(SR_LOG_LEVEL)
+_Atomic os_log_type_t _SRLogLevel = SR_LOG_LEVEL;
+#else
+_Atomic os_log_type_t _SRLogLevel = OS_LOG_TYPE_ERROR;
+#endif
+
 
 NSBundle *SRBundle(void)
 {

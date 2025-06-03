@@ -10,9 +10,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /*!
- Don't use directly, use SRLiteralKeyCodeTransformer / SRSymbolicKeyCodeTransformer / SRLiteralKeyCodeTransformer / SRSymbolicKeyCodeTransformer instead.
+ Base class.
+
+ @warning Don't use directly, use one of:
+ - `SRLiteralKeyCodeTransformer`
+ - `SRSymbolicKeyCodeTransformer`
+ - `SRLiteralKeyCodeTransformer`
+ - `SRSymbolicKeyCodeTransformer
+
+ Each subclass of SRKeyCodeTransformer can be instantiated either with autoupdating (`-[SRKeyCodeTransformer init:]`) or with
+ a concrete (`-[SRKeyCodeTransformer initWithInputSource:]`) input. An autoupdating input source tracks currently selected system input source
+ and thus may produce different output depending for the same arguments.
  */
-NS_SWIFT_UNAVAILABLE("use SRLiteralKeyCodeTransformer / SRSymbolicKeyCodeTransformer / SRLiteralKeyCodeTransformer / SRSymbolicKeyCodeTransformer instead")
+NS_SWIFT_UNAVAILABLE("use SRLiteralKeyCodeTransformer, SRSymbolicKeyCodeTransformer, SRLiteralKeyCodeTransformer or SRSymbolicKeyCodeTransformer instead")
 @interface SRKeyCodeTransformer : NSValueTransformer
 /*!
  Shared transformer.
@@ -40,8 +50,14 @@ NS_SWIFT_UNAVAILABLE("use SRLiteralKeyCodeTransformer / SRSymbolicKeyCodeTransfo
  */
 @property (readonly) id inputSource;
 
+/*!
+ Initialize the transformer with autoupdating input source that tracks currently selected system input source.
+ */
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
+/*!
+ Initialize the transformer with the given input source.
+ */
 - (instancetype)initWithInputSource:(id)anInputSource NS_DESIGNATED_INITIALIZER;
 
 /*!

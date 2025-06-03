@@ -3,11 +3,12 @@
 //  CC BY 4.0
 //
 
-#import <os/log.h>
-
 #import "ShortcutRecorder/SRKeyCodeTransformer.h"
 
 #import "ShortcutRecorder/SRKeyBindingTransformer.h"
+
+
+static os_log_t _Log;
 
 
 @implementation SRKeyBindingTransformer
@@ -56,7 +57,7 @@
 
     if (keyCodeString.length != 1)
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error unexpected key symbol");
+        SRLogError(_Log, "#transform unexpected key symbol \"%s\"", keyCodeString.UTF8String);
         return nil;
     }
 
@@ -79,7 +80,7 @@
 
     if (!keyCode)
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error unexpected key symbol");
+        SRLogError(_Log, "#transform unknown key symbol \"%s\"", keyCodeString.UTF8String);
         return nil;
     }
 
@@ -148,14 +149,14 @@
 {
     if (![aValue isKindOfClass:NSDictionary.class] && ![aValue isKindOfClass:SRShortcut.class])
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error invalid class of the value");
+        SRLogError(_Log, "#reverse_transform invalid value class \"%s\"", aValue.className.UTF8String);
         return nil;
     }
 
     NSNumber *keyCode = aValue[SRShortcutKeyKeyCode];
     if (![keyCode isKindOfClass:NSNumber.class])
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error invalid key code");
+        SRLogError(_Log, "#reverse_transform invalid key code class \"%s\"", keyCode.className.UTF8String);
         return nil;
     }
 
@@ -163,7 +164,7 @@
 
     if (!keyCodeSymbol)
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error unexpected key code");
+        SRLogError(_Log, "#reverse_transform unexpected key code \"%s\"", keyCode.stringValue.UTF8String);
         return nil;
     }
 
@@ -221,6 +222,16 @@
     [keyBinding appendString:keyCodeSymbol];
 
     return [keyBinding copy];
+}
+
+#pragma mark NSObject
+
++ (void)initialize
+{
+    static dispatch_once_t OnceToken;
+    dispatch_once(&OnceToken, ^{
+        _Log = os_log_create(SRLogSubsystem.UTF8String, SRLogCategoryKeyBindingTransformer.UTF8String);
+    });
 }
 
 @end
