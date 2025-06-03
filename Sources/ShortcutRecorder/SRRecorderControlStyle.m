@@ -322,8 +322,8 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
          relativeToComponents:(SRRecorderControlStyleComponents *)anIdealComponents
 {
     static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *AppearanceOrderMap = nil;
-//    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *TintOrderMap = nil;
-//    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *DirectionOrderMap = nil;
+    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *TintOrderMap = nil;
+    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *DirectionOrderMap = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         AppearanceOrderMap = @{
@@ -349,21 +349,21 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
                                                               @(SRRecorderControlStyleComponentsAppearanceUnspecified)]
         };
 
-//        TintOrderMap = @{
-//            @(SRRecorderControlStyleComponentsTintBlue): @[@(SRRecorderControlStyleComponentsTintBlue),
-//                                                 @(SRRecorderControlStyleComponentsTintGraphite),
-//                                                 @(SRRecorderControlStyleComponentsTintUnspecified)],
-//            @(SRRecorderControlStyleComponentsTintGraphite): @[@(SRRecorderControlStyleComponentsTintGraphite),
-//                                                     @(SRRecorderControlStyleComponentsTintBlue),
-//                                                     @(SRRecorderControlStyleComponentsTintUnspecified)]
-//        };
-//
-//        DirectionOrderMap = @{
-//            @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight): @[@(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight),
-//                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft)],
-//            @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft): @[@(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft),
-//                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight)]
-//        };
+        TintOrderMap = @{
+            @(SRRecorderControlStyleComponentsTintBlue): @[@(SRRecorderControlStyleComponentsTintBlue),
+                                                 @(SRRecorderControlStyleComponentsTintGraphite),
+                                                 @(SRRecorderControlStyleComponentsTintUnspecified)],
+            @(SRRecorderControlStyleComponentsTintGraphite): @[@(SRRecorderControlStyleComponentsTintGraphite),
+                                                     @(SRRecorderControlStyleComponentsTintBlue),
+                                                     @(SRRecorderControlStyleComponentsTintUnspecified)]
+        };
+
+        DirectionOrderMap = @{
+            @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight): @[@(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight),
+                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft)],
+            @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft): @[@(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft),
+                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight)]
+        };
     });
 
     __auto_type CompareEnum = ^(NSUInteger a, NSUInteger b, NSArray<NSNumber *> *order) {
