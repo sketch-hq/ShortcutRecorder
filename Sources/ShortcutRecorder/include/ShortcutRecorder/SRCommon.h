@@ -5,6 +5,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
+#import <os/log.h>
+
+#import <stdatomic.h>
 #import <stdint.h>
 
 
@@ -246,6 +249,56 @@ extern SRModifierFlagString const SRModifierFlagStringCommand;
 extern SRModifierFlagString const SRModifierFlagStringOption;
 extern SRModifierFlagString const SRModifierFlagStringShift;
 extern SRModifierFlagString const SRModifierFlagStringControl;
+
+
+/*!
+ Logging subsystem used by the framework.
+ */
+extern NSString * const SRLogSubsystem NS_SWIFT_NAME(LogSubsystem);
+
+/*!
+ Logging categories used by the framework.
+ */
+typedef NSString *SRLogCategory NS_TYPED_EXTENSIBLE_ENUM NS_SWIFT_NAME(LogCategory);
+extern SRLogCategory const SRLogCategoryKeyBindingTransformer;
+extern SRLogCategory const SRLogCategoryKeyCodeTransformer;
+extern SRLogCategory const SRLogCategoryModifierFlagsTransformer;
+extern SRLogCategory const SRLogCategoryRecorderControl;
+extern SRLogCategory const SRLogCategoryRecorderControlStyle;
+extern SRLogCategory const SRLogCategoryRecorderControlStyleResourceLoader;
+extern SRLogCategory const SRLogCategoryShortcut;
+extern SRLogCategory const SRLogCategoryShortcutAction;
+extern SRLogCategory const SRLogCategoryShortcutMonitor;
+extern SRLogCategory const SRLogCategoryShortcutValidator;
+
+extern _Atomic os_log_type_t _SRLogLevel NS_SWIFT_UNAVAILABLE("Use SetLogLevel and GetLogLevel instead");
+
+NS_SWIFT_NAME(SetLogLevel(_:))
+NS_INLINE os_log_type_t SRLogSetLevel(os_log_type_t aLevel)
+{
+    return atomic_exchange(&_SRLogLevel, aLevel);
+}
+
+NS_SWIFT_NAME(GetLogLevel())
+NS_INLINE os_log_type_t SRLogGetLevel(void)
+{
+    return atomic_load(&_SRLogLevel);
+}
+
+#define SRLog(log, type, format, ...) \
+    os_log_with_type(type >= SRLogGetLevel() ? log : OS_LOG_DISABLED, type, format, ##__VA_ARGS__)
+
+#define SRLogInfo(log, format, ...) \
+    SRLog(log, OS_LOG_TYPE_INFO, format, ##__VA_ARGS__)
+
+#define SRLogDebug(log, format, ...) \
+    SRLog(log, OS_LOG_TYPE_DEBUG, format, ##__VA_ARGS__)
+
+#define SRLogError(log, format, ...) \
+    SRLog(log, OS_LOG_TYPE_ERROR, format, ##__VA_ARGS__)
+
+#define SRLogFault(log, format, ...) \
+    SRLog(log, OS_LOG_TYPE_FAULT, format, ##__VA_ARGS__)
 
 
 /*!

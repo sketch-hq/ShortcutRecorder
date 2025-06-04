@@ -3,7 +3,6 @@
 //  CC BY 4.0
 //
 
-#import <os/log.h>
 #import <os/activity.h>
 
 #import "ShortcutRecorder/SRCommon.h"
@@ -11,6 +10,9 @@
 #import "ShortcutRecorder/SRShortcut.h"
 
 #import "ShortcutRecorder/SRShortcutValidator.h"
+
+
+static os_log_t _Log;
 
 
 @implementation SRShortcutValidator
@@ -142,7 +144,9 @@
 
         if (err != noErr)
         {
-            os_log_error(OS_LOG_DEFAULT, "#Error Unable to read System Shortcuts: %d", err);
+            SRLogError(_Log, "failed to read System Shortcuts: %s (%d)",
+                       [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].localizedDescription.UTF8String,
+                       err);
             result = NO;
             return;
         }
@@ -271,6 +275,16 @@
     }
 
     return isValid;
+}
+
+#pragma mark NSObject
+
++ (void)initialize
+{
+    static dispatch_once_t OnceToken;
+    dispatch_once(&OnceToken, ^{
+        _Log = os_log_create(SRLogSubsystem.UTF8String, SRLogCategoryShortcutValidator.UTF8String);
+    });
 }
 
 @end

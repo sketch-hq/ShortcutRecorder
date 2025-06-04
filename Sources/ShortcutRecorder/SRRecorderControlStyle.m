@@ -3,7 +3,6 @@
 //  CC BY 4.0
 //
 
-#import <os/log.h>
 #import <os/activity.h>
 
 #import "ShortcutRecorder/SRRecorderControl.h"
@@ -11,6 +10,9 @@
 
 
 NSAttributedStringKey const SRMinimalDrawableWidthAttributeName = @"SRMinimalDrawableWidthAttributeName";
+
+
+static os_log_t _ResourceLoaderLog;
 
 
 SRRecorderControlStyleComponentsAppearance SRRecorderControlStyleComponentsAppearanceFromSystem(NSAppearanceName aSystemAppearanceName)
@@ -320,8 +322,8 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
          relativeToComponents:(SRRecorderControlStyleComponents *)anIdealComponents
 {
     static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *AppearanceOrderMap = nil;
-//    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *TintOrderMap = nil;
-//    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *DirectionOrderMap = nil;
+    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *TintOrderMap = nil;
+    static NSDictionary<NSNumber *, NSArray<NSNumber *> *> *DirectionOrderMap = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         AppearanceOrderMap = @{
@@ -347,21 +349,21 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
                                                               @(SRRecorderControlStyleComponentsAppearanceUnspecified)]
         };
 
-//        TintOrderMap = @{
-//            @(SRRecorderControlStyleComponentsTintBlue): @[@(SRRecorderControlStyleComponentsTintBlue),
-//                                                 @(SRRecorderControlStyleComponentsTintGraphite),
-//                                                 @(SRRecorderControlStyleComponentsTintUnspecified)],
-//            @(SRRecorderControlStyleComponentsTintGraphite): @[@(SRRecorderControlStyleComponentsTintGraphite),
-//                                                     @(SRRecorderControlStyleComponentsTintBlue),
-//                                                     @(SRRecorderControlStyleComponentsTintUnspecified)]
-//        };
-//
-//        DirectionOrderMap = @{
-//            @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight): @[@(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight),
-//                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft)],
-//            @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft): @[@(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft),
-//                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight)]
-//        };
+        TintOrderMap = @{
+            @(SRRecorderControlStyleComponentsTintBlue): @[@(SRRecorderControlStyleComponentsTintBlue),
+                                                 @(SRRecorderControlStyleComponentsTintGraphite),
+                                                 @(SRRecorderControlStyleComponentsTintUnspecified)],
+            @(SRRecorderControlStyleComponentsTintGraphite): @[@(SRRecorderControlStyleComponentsTintGraphite),
+                                                     @(SRRecorderControlStyleComponentsTintBlue),
+                                                     @(SRRecorderControlStyleComponentsTintUnspecified)]
+        };
+
+        DirectionOrderMap = @{
+            @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight): @[@(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight),
+                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft)],
+            @(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft): @[@(SRRecorderControlStyleComponentsLayoutDirectionRightToLeft),
+                                                                             @(SRRecorderControlStyleComponentsLayoutDirectionLeftToRight)]
+        };
     });
 
     __auto_type CompareEnum = ^(NSUInteger a, NSUInteger b, NSArray<NSNumber *> *order) {
@@ -408,11 +410,11 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
     else if (self.layoutDirection != anOtherComponents.layoutDirection)
         return CompareEnum(self.layoutDirection,
                            anOtherComponents.layoutDirection,
-                           AppearanceOrderMap[@(anIdealComponents.layoutDirection)]);
+                           DirectionOrderMap[@(anIdealComponents.layoutDirection)]);
     else if (self.tint != anOtherComponents.tint)
         return CompareEnum(self.tint,
                            anOtherComponents.tint,
-                           AppearanceOrderMap[@(anIdealComponents.tint)]);
+                           TintOrderMap[@(anIdealComponents.tint)]);
     else
         return NSOrderedSame;
 }
@@ -718,9 +720,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
 
     __block NSDictionary *info = nil;
     os_activity_initiate("-[SRRecorderControlStyleResourceLoader infoForStyle:]", OS_ACTIVITY_FLAG_DEFAULT, (^{
-        os_log_debug(OS_LOG_DEFAULT, "Fetching info %@", @{
-            @"identifier": aStyle.identifier
-        });
+        SRLogDebug(_ResourceLoaderLog, "fetching info for %s", aStyle.identifier.UTF8String);
 
         @synchronized (self)
         {
@@ -728,7 +728,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
 
             if (!info)
             {
-                os_log_debug(OS_LOG_DEFAULT, "Info is not in cache");
+                SRLogDebug(_ResourceLoaderLog, "info cache: miss");
                 NSString *resourceName = [NSString stringWithFormat:@"%@-info", aStyle.identifier];
                 NSData *data = [[NSDataAsset alloc] initWithName:resourceName bundle:SRBundle()].data;
 
@@ -786,7 +786,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
                 [self->_cache setObject:info forKey:aStyle.identifier];
             }
             else
-                os_log_debug(OS_LOG_DEFAULT, "Info is in cache");
+                SRLogDebug(_ResourceLoaderLog, "info cache: hit");
         }
     }));
 
@@ -797,9 +797,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
 {
     __block NSArray *lookupPrefixes = nil;
     os_activity_initiate("-[SRRecorderControlStyleResourceLoader lookupPrefixesForStyle:]", OS_ACTIVITY_FLAG_DEFAULT, (^{
-        os_log_debug(OS_LOG_DEFAULT, "Fetching lookup prefixes %@", @{
-            @"identifier": aStyle.identifier
-        });
+        SRLogDebug(_ResourceLoaderLog, "fetching lookup prefixes for %s", aStyle.identifier.UTF8String);
 
         @synchronized (self)
         {
@@ -811,7 +809,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
 
             if (!lookupPrefixes)
             {
-                os_log_debug(OS_LOG_DEFAULT, "Lookup prefixes are not in cache");
+                SRLogDebug(_ResourceLoaderLog, "prefixes cache: miss");
                 SRRecorderControlStyleComponents *effectiveComponents = aStyle.effectiveComponents;
                 NSComparator cmp = ^NSComparisonResult(SRRecorderControlStyleComponents *a, SRRecorderControlStyleComponents *b) {
                     return [a compare:b relativeToComponents:effectiveComponents];
@@ -827,7 +825,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
                 [self->_cache setObject:lookupPrefixes forKey:key];
             }
             else
-                os_log_debug(OS_LOG_DEFAULT, "Lookup prefixes are in cache");
+                SRLogDebug(_ResourceLoaderLog, "prefixes cache: hit");
         }
     }));
 
@@ -838,10 +836,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
 {
     __block NSImage *image = nil;
     os_activity_initiate("-[SRRecorderControlStyleResourceLoader imageNamed:forStyle:]", OS_ACTIVITY_FLAG_DEFAULT, (^{
-        os_log_debug(OS_LOG_DEFAULT, "Fetching image name %@", @{
-            @"identifier": aStyle.identifier,
-            @"image": aName
-        });
+        SRLogDebug(_ResourceLoaderLog, "fetching image name \"%s\" for \"%s\"", aName.UTF8String, aStyle.identifier.UTF8String);
 
         @synchronized (self)
         {
@@ -853,7 +848,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
 
             if (!imageNameCache)
             {
-                os_log_debug(OS_LOG_DEFAULT, "Image name is not in cache");
+                SRLogDebug(_ResourceLoaderLog, "image cache: miss");
                 NSString *imageName = nil;
                 BOOL usesSRImage = YES;
 
@@ -883,7 +878,7 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
             }
             else
             {
-                os_log_debug(OS_LOG_DEFAULT, "Image name is in cache");
+                SRLogDebug(_ResourceLoaderLog, "image cache: hit");
                 NSString *imageName = imageNameCache[0];
                 BOOL usesSRImage = [imageNameCache[1] boolValue];
 
@@ -896,6 +891,16 @@ NSUserInterfaceLayoutDirection SRRecorderControlStyleComponentsLayoutDirectionTo
     }));
 
     return image;
+}
+
+#pragma mark NSObject
+
++ (void)initialize
+{
+    static dispatch_once_t OnceToken;
+    dispatch_once(&OnceToken, ^{
+        _ResourceLoaderLog = os_log_create(SRLogSubsystem.UTF8String, SRLogCategoryRecorderControlStyleResourceLoader.UTF8String);
+    });
 }
 
 @end

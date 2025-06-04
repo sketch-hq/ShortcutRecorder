@@ -1,3 +1,19 @@
+3.5.0 (TBD)
+---
+
+Improvements:
+
+- os_trace -> os_log
+- Enable extension-safe API
+- Bump min macOS version to 10.13
+- Use [C-compiler hardening flags](https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html#tldr-what-compiler-options-should-i-use) for the ShortcutRecorder framework
+
+Fixes:
+
+- Fix an exception when the control is deallocated while still in the recording state
+- Fix bitwise OR instead of logicat OR is the KeyCode transformer
+- Fix incorrect style matching by tint and layout order
+
 3.4.0 (2022-08-17)
 ---
 

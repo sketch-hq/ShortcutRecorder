@@ -3,11 +3,12 @@
 //  CC BY 4.0
 //
 
-#import <os/log.h>
-
 #import "ShortcutRecorder/SRCommon.h"
 
 #import "ShortcutRecorder/SRModifierFlagsTransformer.h"
+
+
+static os_log_t _Log;
 
 
 @implementation SRModifierFlagsTransformer
@@ -45,6 +46,16 @@
     return [self transformedValue:aValue layoutDirection:NSUserInterfaceLayoutDirectionLeftToRight];
 }
 
+#pragma mark NSObject
+
++ (void)initialize
+{
+    static dispatch_once_t OnceToken;
+    dispatch_once(&OnceToken, ^{
+        _Log = os_log_create(SRLogSubsystem.UTF8String, SRLogCategoryModifierFlagsTransformer.UTF8String);
+    });
+}
+
 @end
 
 
@@ -66,7 +77,7 @@
 {
     if (![aValue isKindOfClass:NSNumber.class])
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error Invalid value for transformation");
+        SRLogError(_Log, "#literal_transformer #transform invalid value class \"%s\"", aValue.className.UTF8String);
         return nil;
     }
 
@@ -117,7 +128,7 @@
 {
     if (![aValue isKindOfClass:NSNumber.class])
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error Invalid value for transformation");
+        SRLogError(_Log, "#symbolic_transformer #transform invalid value class \"%s\"", aValue.className.UTF8String);
         return nil;
     }
 
@@ -146,7 +157,7 @@
 {
     if (![aValue isKindOfClass:NSString.class])
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error Invalid value for reverse transformation");
+        SRLogError(_Log, "#symbolic_transformer #reverse_transform invalid value class \"%s\"", aValue.className.UTF8String);
         return nil;
     }
 
@@ -174,7 +185,7 @@
 
     if (foundInvalidSubstring)
     {
-        os_log_error(OS_LOG_DEFAULT, "#Error Invalid value for reverse transformation");
+        SRLogError(_Log, "#symbolic_transformer #reverse_transform found invalid substring");
         return nil;
     }
 

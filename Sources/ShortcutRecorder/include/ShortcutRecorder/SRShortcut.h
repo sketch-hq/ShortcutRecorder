@@ -86,6 +86,8 @@ NS_SWIFT_NAME(Shortcut)
 
 /*!
  Initialize the shortcut from a left-to-right ASCII key code and symbolic modifier flags e.g. @"⇧⌘A".
+
+ @note May return `nil` if the given ASCII key code does not have a corresponding physical keyboard key under the active input source.
  */
 + (nullable instancetype)shortcutWithKeyEquivalent:(NSString *)aKeyEquivalent;
 
@@ -96,7 +98,10 @@ NS_SWIFT_NAME(Shortcut)
  */
 + (nullable instancetype)shortcutWithKeyBinding:(NSString *)aKeyBinding;
 
-+ (instancetype)new NS_UNAVAILABLE;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability"
++ (nullable instancetype)new NS_UNAVAILABLE;
+#pragma clang diagnostic pop
 
 /*!
  Designated initializer.
@@ -118,7 +123,10 @@ NS_SWIFT_NAME(Shortcut)
                   characters:(nullable NSString *)aCharacters
  charactersIgnoringModifiers:(nullable NSString *)aCharactersIgnoringModifiers NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)init NS_UNAVAILABLE;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability"
+- (nullable instancetype)init NS_UNAVAILABLE;
+#pragma clang diagnostic pop
 
 /*!
  A key code such as 0 ('a').

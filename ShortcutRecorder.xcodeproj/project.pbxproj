@@ -156,6 +156,7 @@
 		BAE0CF152295E82E00DD65C5 /* BindingsInspectorController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BindingsInspectorController.xib; sourceTree = "<group>"; };
 		BAE3063A1F80955700904E9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		BAED4704217007C70008DA80 /* SRRecorderControlTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRRecorderControlTests.swift; sourceTree = "<group>"; };
+		BAEFCE5A2D307DCD002D22BB /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		E2741AC41673C79F00A139BD /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShortcutRecorder.strings; sourceTree = "<group>"; };
 		E2741AC61673C7A400A139BD /* de */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/ShortcutRecorder.strings; sourceTree = "<group>"; };
 		E2741AC71673C7A600A139BD /* el */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/ShortcutRecorder.strings; sourceTree = "<group>"; };
@@ -253,6 +254,7 @@
 				BAB730A92481521200FF3C0B /* CHANGES.md */,
 				BA8CFE0F22A2F17A00C96F79 /* ATTRIBUTION.md */,
 				BA8CFDF222A2645800C96F79 /* LICENSE.txt */,
+				BAEFCE5A2D307DCD002D22BB /* Package.swift */,
 				BA8C53D421FFED8D00B40164 /* Documentation.playground */,
 				BAC79C08216FCE8E00E45F23 /* Inspector */,
 				080E96DDFE201D6D7F000001 /* ShortcutRecorder */,
@@ -441,7 +443,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1000;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					9398377F0DA42965007F53F3 = {
 						LastSwiftMigration = 1000;
@@ -638,6 +640,7 @@
 		939837820DA42965007F53F3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
@@ -648,6 +651,7 @@
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 3.1;
 				DYLIB_CURRENT_VERSION = 3.4;
+				ENABLE_MODULE_VERIFIER = NO;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Sources/ShortcutRecorder/Info.plist;
 				INSTALL_PATH = "@rpath";
@@ -655,6 +659,19 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
+				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
+				"OTHER_CFLAGS[arch=arm64]" = (
+					"-fstrict-flex-arrays=3",
+					"-fstack-clash-protection",
+					"-fstack-protector-strong",
+					"-mbranch-protection=standard",
+				);
+				"OTHER_CFLAGS[arch=x86_64]" = (
+					"-fstrict-flex-arrays=3",
+					"-fstack-clash-protection",
+					"-fstack-protector-strong",
+					"-fcf-protection=full",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
@@ -666,6 +683,7 @@
 		939837830DA42965007F53F3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
@@ -676,6 +694,7 @@
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 3.1;
 				DYLIB_CURRENT_VERSION = 3.4;
+				ENABLE_MODULE_VERIFIER = NO;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Sources/ShortcutRecorder/Info.plist;
 				INSTALL_PATH = "@rpath";
@@ -683,6 +702,27 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
+				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
+				"OTHER_CFLAGS[arch=arm64]" = (
+					"-fstrict-flex-arrays=3",
+					"-fstack-clash-protection",
+					"-fstack-protector-strong",
+					"-fno-delete-null-pointer-checks",
+					"-fno-strict-overflow",
+					"-fno-strict-aliasing",
+					"-ftrivial-auto-var-init=zero",
+					"-mbranch-protection=standard",
+				);
+				"OTHER_CFLAGS[arch=x86_64]" = (
+					"-fstrict-flex-arrays=3",
+					"-fstack-clash-protection",
+					"-fstack-protector-strong",
+					"-fno-delete-null-pointer-checks",
+					"-fno-strict-overflow",
+					"-fno-strict-aliasing",
+					"-ftrivial-auto-var-init=zero",
+					"-fcf-protection=full",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
@@ -718,6 +758,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder.UnitTests;
@@ -752,6 +793,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder.UnitTests;
@@ -789,6 +831,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder.Inspector;
@@ -822,6 +865,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder.Inspector;
@@ -863,12 +907,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CLANG_X86_VECTOR_INSTRUCTIONS = ssse3;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = c17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
@@ -881,7 +926,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-fstack-protector";
+				OTHER_CFLAGS = (
+					"-fstrict-flex-arrays=3",
+					"-fstack-clash-protection",
+					"-fstack-protector-strong",
+				);
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -921,10 +970,11 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CLANG_X86_VECTOR_INSTRUCTIONS = ssse3;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = c17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
@@ -934,7 +984,16 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				OTHER_CFLAGS = "-fstack-protector";
+				OTHER_CFLAGS = (
+					"-fstrict-flex-arrays=3",
+					"-fstack-clash-protection",
+					"-fstack-protector-strong",
+					"-fno-delete-null-pointer-checks",
+					"-fno-strict-overflow",
+					"-fno-strict-aliasing",
+					"-ftrivial-auto-var-init=zero",
+				);
+				"OTHER_CFLAGS[arch=x86_64]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
