@@ -661,9 +661,7 @@
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
 				"OTHER_CFLAGS[arch=arm64]" = (
-					"-fstrict-flex-arrays=3",
-					"-fstack-clash-protection",
-					"-fstack-protector-strong",
+					"$(inherited)",
 					"-mbranch-protection=standard",
 				);
 				"OTHER_CFLAGS[arch=x86_64]" = (
@@ -703,13 +701,7 @@
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
 				"OTHER_CFLAGS[arch=arm64]" = (
-					"-fstrict-flex-arrays=3",
-					"-fstack-clash-protection",
-					"-fstack-protector-strong",
-					"-fno-delete-null-pointer-checks",
-					"-fno-strict-overflow",
-					"-fno-strict-aliasing",
-					"-ftrivial-auto-var-init=zero",
+					"$(inherited)",
 					"-mbranch-protection=standard",
 				);
 				"OTHER_CFLAGS[arch=x86_64]" = (
