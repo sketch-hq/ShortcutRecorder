@@ -662,16 +662,8 @@
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
 				"OTHER_CFLAGS[arch=arm64]" = (
-					"-fstrict-flex-arrays=3",
-					"-fstack-clash-protection",
-					"-fstack-protector-strong",
+					"$(inherited)",
 					"-mbranch-protection=standard",
-				);
-				"OTHER_CFLAGS[arch=x86_64]" = (
-					"-fstrict-flex-arrays=3",
-					"-fstack-clash-protection",
-					"-fstack-protector-strong",
-					"-fcf-protection=full",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
@@ -705,24 +697,8 @@
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++14";
 				"OTHER_CFLAGS[arch=arm64]" = (
-					"-fstrict-flex-arrays=3",
-					"-fstack-clash-protection",
-					"-fstack-protector-strong",
-					"-fno-delete-null-pointer-checks",
-					"-fno-strict-overflow",
-					"-fno-strict-aliasing",
-					"-ftrivial-auto-var-init=zero",
+					"$(inherited)",
 					"-mbranch-protection=standard",
-				);
-				"OTHER_CFLAGS[arch=x86_64]" = (
-					"-fstrict-flex-arrays=3",
-					"-fstack-clash-protection",
-					"-fstack-protector-strong",
-					"-fno-delete-null-pointer-checks",
-					"-fno-strict-overflow",
-					"-fno-strict-aliasing",
-					"-ftrivial-auto-var-init=zero",
-					"-fcf-protection=full",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kulakov.ShortcutRecorder;
 				PRODUCT_NAME = ShortcutRecorder;
@@ -993,7 +969,6 @@
 					"-fno-strict-aliasing",
 					"-ftrivial-auto-var-init=zero",
 				);
-				"OTHER_CFLAGS[arch=x86_64]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
