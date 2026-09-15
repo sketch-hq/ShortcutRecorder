@@ -443,7 +443,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1000;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					9398377F0DA42965007F53F3 = {
 						LastSwiftMigration = 1000;
